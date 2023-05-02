@@ -6,8 +6,8 @@ use IEEE.STD_LOGIC_UNSIGNED.ALL;
 entity instr_mem is
   port(addr : in std_logic_vector(15 downto 0);
        memread : in std_logic;
-       memwrite: in std_logic;
-       datapointer: in std_logic_vector(15 downto 0);
+       --memwrite: in std_logic;
+       --datapointer: in std_logic_vector(15 downto 0);
         data : out std_logic_vector(15 downto 0);
        )
 end instr_mem;
@@ -50,12 +50,10 @@ begin
 		storage(25) <= "1111xxxxxxxxxxxx"; -- JRI
 
 		if memread = '1' then
-		    data <= storage(to_integer(unsigned(datapointer)));
+		    data <= storage(to_integer(unsigned(addr)));
 		end if;
 		
-		if memwrite = '1' then
-		    storage(to_integer(unsigned(datapointer))) <= addr;
-		end if;
+		
 		
   end process;
 end bhv;
