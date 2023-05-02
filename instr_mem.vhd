@@ -17,7 +17,7 @@ type memory_storage is array(0 to 255) of std_logic_vector(15 downto 0);
 signal storage: memory_storage;
 
 begin
-  process(PC_in, memread, memwrite, pipe1_reg1)
+  process(addr, memread, memwrite, data)
 	 begin
 	   storage(0) <= "0001xxxxxxxxx000"; -- ADA
 		storage(1) <= "0001xxxxxxxxx010"; -- ADC	
@@ -50,11 +50,11 @@ begin
 		storage(25) <= "1111xxxxxxxxxxxx"; -- JRI
 
 		if memread = '1' then
-		    pipe1_reg1 <= storage(to_integer(unsigned(datapointer)));
+		    data <= storage(to_integer(unsigned(datapointer)));
 		end if;
 		
 		if memwrite = '1' then
-		    storage(to_integer(unsigned(datapointer))) <= PC_in;
+		    storage(to_integer(unsigned(datapointer))) <= addr;
 		end if;
 		
   end process;
