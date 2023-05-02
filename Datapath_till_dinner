@@ -145,15 +145,19 @@ signal P4_R2_wr, P4_R1_wr, cflag, zflag, P4_R4_wr, P4_R3_wr--  Execute
 signal Inst_Mem_rd, P1_R1_wr,P1_R2_wr, clr, rst, PC_write, P2_R1_wr,P5_R1_wr,P5_R2_wr,demux1_s, demux2_s,demux_o1,demux_o2,dm_out,dm_rd, dm_wr, Mux2_control
 
        P5_R1_wr, mux3_wr, mux3_out, P5_R3_wr, P5_R3_out
+      
+signal PC,RF_D1,RF_D2,RF_D3,P2_R1_out,P2_R2_out,P3_R2_out,P3_R1_out,P3_RA_out,P3_RB_out:std_logic_vector(15 downto 0);
+signal RF_A1,RF_A2,RF_A3:std_logic_vector(2 downto 0);
+signal P3_R1_wr,P3_R2_wr,P3_RA_wr,P3_RB_wr,RF_wr,RF_rd:std_logic:=0;
 
  begin
    
-	PC : sbitregister port map(clk => clk, d=>PCin, q=>PCout, ld=> PC_write, clr => clr);
-   IM : instr_mem port map(clk => clk, addr => PC_out, memread => Inst_Mem_rd, data=>Inst_Mem_out);
-	P1_R1 : sbitregister port map(d => Inst_Mem_out, ld => P1_R1_wr, clk => clk, q => P1_R1_out, clr => clr);
+   PC : sbitregister port map(clk => clk, d=>PCin, q=>PCout, ld=> PC_write, clr => clr);
+   IM : instr_mem port map(clk => clk, addr => PC_out, memread => Inst_Mem_rd, data=>Inst_Mem_out); 
+   P1_R1 : sbitregister port map(d => Inst_Mem_out, ld => P1_R1_wr, clk => clk, q => P1_R1_out, clr => clr);
 	
 	
-	# MUX1  : mux2x1 port map(A => P1_R2_out, B => ALU_3_C, C => PCin);
+	MUX1  : mux2x1 port map(A => P1_R2_out, B => ALU_3_C, C => PCin);
 	P1_R2 : sbitregister port map(d => ALU_1_C, ld => P1_R2_wr, clk => clk, q => P1_R2_out, clr => clr);
 	ALU_1 : ALU1 port map( A => PCout, B => '0000000000000100', C => ALU_1_C);
 	
@@ -167,16 +171,8 @@ signal Inst_Mem_rd, P1_R1_wr,P1_R2_wr, clr, rst, PC_write, P2_R1_wr,P5_R1_wr,P5_
 	ALU_3 : ALU3 port map(A => P1_R2_out, B=> ALU_3_B, C=>ALU_3_C);
 	
 	---------------------------------IF----------------------------
-	
-	
-	signal PC,RF_D1,RF_D2,RF_D3,P2_R1_out,P2_R2_out,P3_R2_out,P3_R1_out,P3_RA_out,P3_RB_out:std_logic_vector(15 downto 0);
-    signal RF_A1,RF_A2,RF_A3:std_logic_vector(2 downto 0);
-    signal P3_R1_wr,P3_R2_wr,P3_RA_wr,P3_RB_wr,RF_wr,RF_rd:std_logic:=0;
-
-
- begin
-
 	--varunav
+
 	RF_RR : rf port map(clk=>clk,rst=>rst,a1=>RF_A1,a2=>RF_A2,a3=>P5_R1_out(11 downto 9),D1=>RF_D1,D2=>RF_D2,D3=>RF_D3,wr=>RF_wr,rd=>RF_rd,pc=>PC)
 	P3_R1 : sbitregister port map(d => P2_R1_out, ld => P3_R1_wr, clk => clk, q => P3_R1_out);
 	P3_R2 : sbitregister port map(d => P2_R2_out, ld => P3_R1_wr, clk => clk, q => P3_R2_out);
@@ -188,11 +184,11 @@ signal Inst_Mem_rd, P1_R1_wr,P1_R2_wr, clr, rst, PC_write, P2_R1_wr,P5_R1_wr,P5_
 	
 	
 	
-   P4_R1 : sbitregister port map(d => P3_R1_out, ld => P4_R1_wr, clk => clk, q => P4_R1_out, clr => clr);
+        P4_R1 : sbitregister port map(d => P3_R1_out, ld => P4_R1_wr, clk => clk, q => P4_R1_out, clr => clr);
 	P4_R2 : sbitregister port map(d => P3_R2_out, ld => P4_R2_wr, clk => clk, q => P4_R2_out, clr => clr);
 	ALU_2 : ALU2 port map(A=>MUX1_out, B=> MUX2_out, c_flag=>cflag, z_flag=>zflag , C=> ALU2_out);
 	MUX2_exe : mux_4to1 port map(S0 => , S1=> , A(0) => P3_RA_out, A(1) => ALU2_out, A(2)=> P5_R2_out, A(3) => , Z=>MUX2_out);
-   MUX3_exe : mux_4to1 port map(S0 => , S1=> , A(0) => P3_RB_out, A(1) => ALU2_out, A(2)=> P5_R2_out, A(3) => , Z=>MUX3_out);
+        MUX3_exe : mux_4to1 port map(S0 => , S1=> , A(0) => P3_RB_out, A(1) => ALU2_out, A(2)=> P5_R2_out, A(3) => , Z=>MUX3_out);
 	P4_R4 : sbitregister port map(d => P3_RB_out, ld => P4_R4_wr, clk => clk, q => P4_R4_out, clr => clr);
 	P4_R3 : sbitregister port map(d => ALU2_out, ld => P4_R3_wr, clk => clk, q => P4_R3_out, clr => clr);
 	
