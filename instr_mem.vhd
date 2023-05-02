@@ -4,11 +4,11 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity instr_mem is
-  port(PC_in : in std_logic_vector(15 downto 0);
+  port(addr : in std_logic_vector(15 downto 0);
        memread : in std_logic;
        memwrite: in std_logic;
        datapointer: in std_logic_vector(15 downto 0);
-       pipe1_reg1 : out std_logic_vector(15 downto 0);
+        data : out std_logic_vector(15 downto 0);
        )
 end instr_mem;
 
