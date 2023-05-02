@@ -4,11 +4,12 @@ use IEEE.STD_LOGIC_ARITH.ALL;
 use IEEE.STD_LOGIC_UNSIGNED.ALL;
 
 entity data_mem is
-  port(mem_data_in : in std_logic_vector(15 downto 0); -- from P4-R4
-		 mem_addr_in : in std_logic_vector(15 downto 0);  -- from demux
-		 data_memread  : in std_logic;
-		 data_memwrite : in std_logic;
-		 mem_out : out std_logic_vector(15 downto 0);  -- to mux
+  port(  clk : in std_logic;
+	 mem_data_in : in std_logic_vector(15 downto 0); -- from P4-R4
+	 mem_addr_in : in std_logic_vector(15 downto 0);  -- from demux
+	 data_memread  : in std_logic;
+	 data_memwrite : in std_logic;
+	 mem_out : out std_logic_vector(15 downto 0);  -- to mux
        )
 end data_mem;
 
