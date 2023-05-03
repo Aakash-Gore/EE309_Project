@@ -131,6 +131,11 @@ component data_mem is
 	 mem_out : out std_logic_vector(15 downto 0);  -- to mux
        )
 end component;
+	  
+component padder15 is
+	port(din:in std_logic_vector(8 downto 0);
+		  dout:out std_logic_vector(15 downto 0));
+end component;
 
  
 
