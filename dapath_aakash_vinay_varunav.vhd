@@ -264,23 +264,23 @@ signal Inst_Mem_rd, P1_R1_wr,P1_R2_wr, clr, rst, PC_write, P2_R1_wr,P5_R1_wr,P5_
 	
 	
 	
-   P4_R1 : sbitregister port map(d => P3_R1_out, ld => P4_R1_wr, clk => clk, q => P4_R1_out, clr => clr);
+  P4_R1 : sbitregister port map(d => P3_R1_out, ld => P4_R1_wr, clk => clk, q => P4_R1_out, clr => clr);
 	P4_R2 : sbitregister port map(d => P3_R2_out, ld => P4_R2_wr, clk => clk, q => P4_R2_out, clr => clr);
-	ALU_2 : ALU2 port map(comp_bit=>Inst_Mem_out(2), ext_carry=>ext_c_flag, carry_encoding=> Inst_Mem_out(1), zero_encoding=>Inst_Mem_out(0),sel=>selector, A=>MUX2_out, B=> MUX3_out, c_flag=>cflag, z_flag=>zflag , C=> ALU2_out);
-	MUX2_exe : mux_4to1 port map(S0 => mux2_exe_1, S1=> mux2_exe_2, A(0) => P3_RA_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(3) => '0' , Z=>MUX2_out);
-   MUX3_exe : mux_4to1 port map(S0 => mux3_exe_1, S1=> mux3_exe_2, A(0) => P3_RB_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(3) => '0' , Z=>MUX3_out);
+	ALU_2 : ALU2 port map(comp_bit=>Inst_Mem_out(2), ext_carry=>ext_c_flag, carry_encoding=> Inst_Mem_out(1), zero_encoding=>Inst_Mem_out(0),sel=>selector, A=>MUX2_out, B=> MUX3_out, c_flag=>cflag, z_flag=>zflag , C=> ALU2_out, branch_right_out=>branch_right);
+	MUX2_exe : mux_4to1 port map(S0 => mux2_exe_1, S1=> mux2_exe_2, A(3) => P3_RA_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(0) => '0' , Z=>MUX2_out);
+   MUX3_exe : mux_4to1 port map(S0 => mux3_exe_1, S1=> mux3_exe_2, A(3) => P3_RB_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(0) => P3_R1_out , Z=>MUX3_out);
 	P4_R4 : sbitregister port map(d => P3_RB_out, ld => P4_R4_wr, clk => clk, q => P4_R4_out, clr => clr);
 	P4_R3 : sbitregister port map(d => ALU2_out, ld => P4_R3_wr, clk => clk, q => P4_R3_out, clr => clr);
 	P4_Rcz : twobitregister port map(d(0) => cflag, d(1) => zflag, ld => con_code_reg_wr, clk => clk, q(0) => carry_f, q(1) => zero_f, clr => clr);
 	padder : Padder15 port map(din=>cflag, dout=>ext_c_flag);
-	
-	opcode<=Inst_Mem_out(15 downto 12);
+	----------------------------EX---------------------------------
+opcode<=Inst_Mem_out(15 downto 12);
 
 if opcode='0001' then
     selector = '0';
 elsif opcode='0010 then 
     selector = '1';
-    
+	 
 carryflag<= Inst_Mem_out(1);
 zeroflag<= Inst_Mem_out(0);
 complement<= Inst_Mem_out(2);
@@ -288,32 +288,31 @@ complement<= Inst_Mem_out(2);
 --mux2_exe_1
 mux2_exe_1 = '0';
 mux2_exe_2 = '0';
-if P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P4_R1_out	then
+if (P3_R1_out(11 downto 9)) or (P3_R1_out(8 downto 6) = P4_R1_out	and (not(opcode = '1000' or opcode = '1001' or opcode = '1010')) then
    mux2_exe_1 = '0';
 	mux2_exe_2 = '1';
-elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out then
+elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out and (not(opcode = '1000' or opcode = '1001' or opcode = '1010')) then
    mux2_exe_1 = '1';
 	mux2_exe_2 = '0';
 else
    mux2_exe_1 = '1';
-	mux2_exe_2 = '1';
+   mux2_exe_2 = '1';
 end if;
 
 
 --mux2_exe_1
 mux3_exe_1 = '0';
 mux3_exe_2 = '0';
-if P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P4_R1_out	then
+if (P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P4_R1_out) and (not(opcode = '1000' or opcode = '1001' or opcode = '1010')) then
    mux3_exe_1 = '0';
 	mux3_exe_2 = '1';
-elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out then
+elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out and (not(opcode = '1000' or opcode = '1001' or opcode = '1010')) then
    mux3_exe_1 = '1';
 	mux3_exe_2 = '0';
-else
+elsif opcode='0000'
    mux3_exe_1 = '1';
 	mux3_exe_2 = '1';
 end if;
-	
 	
 	----------------------------EX---------------------------------
 	
