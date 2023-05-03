@@ -21,18 +21,24 @@ port(
 	 );
 end component;
 
-component ALU2 is
-port(	
+component ALU2  is
+
+  port(	
   
          sel : in std_logic;
+	                comp_bit: in std_logic;
+	                carry_encoding: in std_logic;
+	                zero_encoding: in std_logic;
+	                ext_carry: in std_logic_vector(15 downto 0);
 			A: in std_logic_vector(15 downto 0); 
 			B: in std_logic_vector(15 downto 0);
 			c_flag: out std_logic;
 			z_flag: out std_logic;
 			
 			C: out std_logic_vector(15 downto 0)
-	 );
-end component;
+		);
+		
+end component ALU2;
 
 component sbitregister is
 port (
@@ -61,7 +67,6 @@ port (
 		);
 		
 end component;
-
 
 component se6 is
 	port( 
@@ -140,7 +145,7 @@ signal ALU_1_A,ALU_1_B,ALU_1_C,ALU_2_A,ALU_2_B,ALU_2_C,ALU_3_A,ALU_3_B,ALU_3_C,
 	   RF_D1,RF_D2,RF_D3,R7,PCin,PCout,se9_in,se9_out,se6_in,se6_out : std_logic_vector(15 downto 0) := (others => '0');
 signal ALU2_out, MUX2_out, MUX3_out, P4_R2_out, P4_R1_out, P4_R4_out, P4_R3_out, demux2_o2
 
-signal P4_R2_wr, P4_R1_wr, cflag, zflag, P4_R4_wr, P4_R3_wr--  Execute
+signal P4_R2_wr, P4_R1_wr, cflag, zflag, P4_R4_wr, P4_R3_wr, con_code_reg_wr, selector, complement, carryflag, zeroflag, mux2_exe_1, mux2_exe_2--  Execute
 
 signal Inst_Mem_rd, P1_R1_wr,P1_R2_wr, clr, rst, PC_write, P2_R1_wr,P5_R1_wr,P5_R2_wr,demux1_s, demux2_s,demux_o1,demux_o2,dm_out,dm_rd, dm_wr, Mux2_control
 
@@ -257,11 +262,20 @@ signal Inst_Mem_rd, P1_R1_wr,P1_R2_wr, clr, rst, PC_write, P2_R1_wr,P5_R1_wr,P5_
 	
    P4_R1 : sbitregister port map(d => P3_R1_out, ld => P4_R1_wr, clk => clk, q => P4_R1_out, clr => clr);
 	P4_R2 : sbitregister port map(d => P3_R2_out, ld => P4_R2_wr, clk => clk, q => P4_R2_out, clr => clr);
-	ALU_2 : ALU2 port map(A=>MUX1_out, B=> MUX2_out, c_flag=>cflag, z_flag=>zflag , C=> ALU2_out);
-	MUX2_exe : mux_4to1 port map(S0 => , S1=> , A(0) => P3_RA_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(3) => , Z=>MUX2_out);
-   MUX3_exe : mux_4to1 port map(S0 => , S1=> , A(0) => P3_RB_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(3) => , Z=>MUX3_out);
+	ALU_2 : ALU2 port map(comp_bit=>Inst_Mem_out(2), ext_carry=>ext_c_flag, carry_encoding=> Inst_Mem_out(1), zero_encoding=>Inst_Mem_out(0),sel=>selector, A=>MUX2_out, B=> MUX3_out, c_flag=>cflag, z_flag=>zflag , C=> ALU2_out);
+	MUX2_exe : mux_4to1 port map(S0 => mux2_exe_1, S1=> mux2_exe_2, A(0) => P3_RA_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(3) => '0' , Z=>MUX2_out);
+   MUX3_exe : mux_4to1 port map(S0 => mux3_exe_1, S1=> mux3_exe_2, A(0) => P3_RB_out, A(1) => P4_R3_out, A(2)=> P5_R2_out, A(3) => '0' , Z=>MUX3_out);
 	P4_R4 : sbitregister port map(d => P3_RB_out, ld => P4_R4_wr, clk => clk, q => P4_R4_out, clr => clr);
 	P4_R3 : sbitregister port map(d => ALU2_out, ld => P4_R3_wr, clk => clk, q => P4_R3_out, clr => clr);
+	P4_Rcz : twobitregister port map(d(0) => cflag, d(1) => zflag, ld => con_code_reg_wr, clk => clk, q(0) => carry_f, q(1) => zero_f, clr => clr);
+	padder : Padder15 port map(din=>cflag, dout=>ext_c_flag);
+	
+	opcode<=Inst_Mem_out(15 downto 12);
+
+if opcode='0001' then
+    selector = '0';
+elsif opcode='0010 then 
+    selector = '1';
 	
 	
 	----------------------------EX---------------------------------
