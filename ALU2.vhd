@@ -6,6 +6,7 @@ entity ALU2  is
   port(	
   
          sel : in std_logic;
+	                comp_bit: in std_logic;
 	                carry_encoding: in std_logic;
 	                zero_encoding: in std_logic;
 	                ext_carry: in std_logic_vector(15 downto 0);
@@ -53,6 +54,13 @@ architecture Struct of ALU2 is
 
 			  begin
 			     if carry_encoding = '1' and zero_encoding = '1' then
+				     if comp_bit = '1' then
+					     l1: for i in 0 to 15 loop
+						     B(i) <= not B(i);
+				             end l1;
+				     else 
+					     B(i) <= B(i);
+				     end if;
 
 				case sel is
 				   when '0' =>   --addition
@@ -84,6 +92,14 @@ architecture Struct of ALU2 is
 					 when others =>
 					    C <= "0000000000000000";
 			     else 
+				 if comp_bit = '1' then
+					     l1: for i in 0 to 15 loop
+						     B(i) <= not B(i);
+				             end l1;
+				     else 
+					     B(i) <= B(i);
+				  end if;
+					     
 				 case sel is
 				   when '0' =>   --addition
 
