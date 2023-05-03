@@ -88,11 +88,9 @@ architecture Struct of ALU2 is
 				   when '0' =>   --addition
 
 				      temp1 := add(A,B);
-						D <= temp1(15 downto 0);
-                                      temp2 := add(D,ext_carry);
-						c_flag <= temp1(16);
+						C <= temp1(15 downto 0);
 
-						if temp2(15 downto 0) = "0000000000000000" then
+						if temp1(15 downto 0) = "0000000000000000" then
 						    z_flag <= '1';
 						else
 						    z_flag <= '0';
