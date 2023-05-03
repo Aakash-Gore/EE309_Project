@@ -3,7 +3,7 @@ use std.standard.all;
 library ieee;
 use ieee.std_logic_1164.all;
 entity padder15 is
-	port(din:in std_logic_vector(8 downto 0);
+	port(din:in std_logic;
 		  dout:out std_logic_vector(15 downto 0));
 end entity;
 architecture struct of padder15 is
