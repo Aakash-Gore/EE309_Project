@@ -316,6 +316,15 @@ end if;
 	
 	----------------------------EX---------------------------------
 	
+	if (P3_R1_out(15 downto 12)="0100" and 
+	(P2_R1_out(15 downto 12)="0001" or P2_R1_out(15 downto 12)="0010" or P2_R1_out(15 downto 12)="0000" or
+	 P2_R1_out(15 downto 12)="0101" or P2_R1_out(15 downto 12)="1010" or P2_R1_out(15 downto 12)="1000" or
+	 P2_R1_out(15 downto 12)="1001") then
+	 if(P3_R1_out(11 downto 9)=P2_R1_out(11 downto 9) or P3_R1_out(11 downto 9)=P2_R1_out(8 downto 6)) then
+		stall1='1';stall2='1';flush3='1';
+	 end if
+	end if;
+
 	Mem_Control: process(clk, rst)
 	 begin
 	  if P4_R1_out(15 downto 12) = "0100" or P4_R1_out(15 downto 12) = "0110" then
@@ -378,6 +387,9 @@ end if;
 	variable stall : std_logic;
 	variable flush : std_logic;
 	
+	process(state,clk)
+	
+	
 	begin
 	
 	case state is
@@ -401,6 +413,8 @@ end if;
 					
 				 elsif stall_1= '0' and flush_1 = '1' then
 				    Inst_Mem_rd <= '0';
+					 P1_R1_wr <= '0';
+					P1_R2_wr <= '0';
 					P1_R1_clr <= '1';
 					P1_R2_clr <= '1';
 					PC_write <= '1';
@@ -432,6 +446,9 @@ end if;
 					P2_R1_clr <= '1';
 					P2_R2_clr <= '1';
 					P2_R3_clr <= '1';
+					P2_R1_wr <= '0';
+					P2_R2_wr <= '0';
+					P2_R3_wr <= '0';
 					
 			 when "010" =>
 			      
@@ -446,15 +463,23 @@ end if;
 			  
 				 elsif stall_3 = '1' and flush_3 = '0' then
 				
+					P3_R1_wr <= '0';
+					P3_R2_wr <= '0';
+					P3_RA_wr <= '0';
+					P3_RB_wr <= '0';
 					
-					P2_R1_wr <= '0';
+					
 					--Mux2_control <= SE_select;
 					
 				 elsif stall_3= '0' and flush_3 = '1' then
-				   P3_R1_wr <= '1';
-					P3_R2_wr <= '1';
-					P3_RA_wr <= '1';
-					P3_RB_wr <= '1';
+				   P3_R1_wr <= '0';
+					P3_R2_wr <= '0';
+					P3_RA_wr <= '0';
+					P3_RB_wr <= '0';
+				   P3_R1_clr <= '1';
+					P3_R2_clr <= '1';
+					P3_RA_clr <= '1';
+					P3_RB_clr <= '1';
 					
 			 when "011" =>
 			    
@@ -476,6 +501,10 @@ end if;
 					--Mux2_control <= SE_select;
 					
 				 elsif stall_4 = '0' and flush_4 = '1' then
+				   P4_R1_wr <= '0';
+					P4_R2_wr <= '0';
+					P4_R3_wr <= '0';
+					P4_R4_wr <= '0';
 				   P4_R1_clr <= '1';
 					P4_R2_clr <= '1';
 					P4_R3_clr <= '1';
@@ -503,29 +532,14 @@ end if;
 					--Mux2_control <= SE_select;
 					
 				 elsif stall_5 = '0' and flush_5 = '1' then
+				 P5_R1_wr <= '0';
+					P5_R2_wr <= '0';
+					P5_R2_wr <= '0';
 				   P5_R1_clr <= '1';
 					P5_R2_clr <= '1';
 					P5_R2_clr <= '1';
 					
 			when others =>
 			;
-			 
-			 end case;
-			 
-					
-					
-			   
-					
-			
-					
-					
-			
-			         	
- 	              
-	
-	   
-	 
-	 
-	 
-	 
-      
+			 
+			 end case;
