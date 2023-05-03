@@ -280,6 +280,39 @@ if opcode='0001' then
     selector = '0';
 elsif opcode='0010 then 
     selector = '1';
+    
+carryflag<= Inst_Mem_out(1);
+zeroflag<= Inst_Mem_out(0);
+complement<= Inst_Mem_out(2);
+
+--mux2_exe_1
+mux2_exe_1 = '0';
+mux2_exe_2 = '0';
+if P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P4_R1_out	then
+   mux2_exe_1 = '0';
+	mux2_exe_2 = '1';
+elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out then
+   mux2_exe_1 = '1';
+	mux2_exe_2 = '0';
+else
+   mux2_exe_1 = '1';
+	mux2_exe_2 = '1';
+end if;
+
+
+--mux2_exe_1
+mux3_exe_1 = '0';
+mux3_exe_2 = '0';
+if P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P4_R1_out	then
+   mux3_exe_1 = '0';
+	mux3_exe_2 = '1';
+elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out then
+   mux3_exe_1 = '1';
+	mux3_exe_2 = '0';
+else
+   mux3_exe_1 = '1';
+	mux3_exe_2 = '1';
+end if;
 	
 	
 	----------------------------EX---------------------------------
