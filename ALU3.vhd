@@ -15,6 +15,7 @@ architecture Struct of ALU3 is
 signal temp : std_logic_vector(15 downto 0);
   begin
      process(A, B)
+       temp <= B;
        B <= std_logic_vector(signed(temp)*2);
 
 				begin
