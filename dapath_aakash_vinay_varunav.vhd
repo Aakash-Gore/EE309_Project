@@ -136,6 +136,10 @@ component data_mem is
 	 mem_out : out std_logic_vector(15 downto 0);  -- to mux
        )
 end component;
+component padder15 is
+	port(din:in std_logic;
+		  dout:out std_logic_vector(15 downto 0));
+end component;
 
  
 
@@ -165,14 +169,17 @@ signal Inst_Mem_rd, P1_R1_wr,P1_R2_wr, clr, rst, PC_write, P2_R1_wr,P5_R1_wr,P5_
             Mux1_control <= '1';
         end if;
     end process IF_control;
+   
 	PC : sbitregister port map(clk => clk, d=>PCin, q=>PCout, ld=> PC_write, clr => clr);
    IM : instr_mem port map(clk => clk, addr => PC_out, memread => Inst_Mem_rd, data=>Inst_Mem_out);
 	P1_R1 : sbitregister port map(d => Inst_Mem_out, ld => P1_R1_wr, clk => clk, q => P1_R1_out, clr => clr);
+	RF_A3="000";RF_D3=PC_out;RF_wr='1';
+	
    --MUX1  : mux2x1 port map(A => P1_R2_out, B => ALU_3_C, C => PCin);
 	MUX1 : mux2x1 port map(A(0) => P1_R2_out, A(1) => P2_R3_out, S0=> Mux1_control, Z=>PCin);
 	P1_R2 : sbitregister port map(d => ALU_1_C, ld => P1_R2_wr, clk => clk, q => P1_R2_out, clr => clr);
 	ALU_1 : ALU1 port map( A => PCout, B => "0000000000000010", C => ALU_1_C);
-	RF_A3="000";RF_D3=PC_out;RF_wr='1';
+	
 	-------------------------------IF---------------------------
 	
 	
@@ -273,6 +280,39 @@ if opcode='0001' then
     selector = '0';
 elsif opcode='0010 then 
     selector = '1';
+    
+carryflag<= Inst_Mem_out(1);
+zeroflag<= Inst_Mem_out(0);
+complement<= Inst_Mem_out(2);
+
+--mux2_exe_1
+mux2_exe_1 = '0';
+mux2_exe_2 = '0';
+if P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P4_R1_out	then
+   mux2_exe_1 = '0';
+	mux2_exe_2 = '1';
+elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out then
+   mux2_exe_1 = '1';
+	mux2_exe_2 = '0';
+else
+   mux2_exe_1 = '1';
+	mux2_exe_2 = '1';
+end if;
+
+
+--mux2_exe_1
+mux3_exe_1 = '0';
+mux3_exe_2 = '0';
+if P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P4_R1_out	then
+   mux3_exe_1 = '0';
+	mux3_exe_2 = '1';
+elsif P3_R1_out(11 downto 9) or P3_R1_out(8 downto 6) = P5_R1_out then
+   mux3_exe_1 = '1';
+	mux3_exe_2 = '0';
+else
+   mux3_exe_1 = '1';
+	mux3_exe_2 = '1';
+end if;
 	
 	
 	----------------------------EX---------------------------------
@@ -312,6 +352,7 @@ elsif opcode='0010 then
 	
 	
 	---------------------------------MEM-------------------------------
+	
 	wbproc:process(clk,rst,state)
 	begin 
 		if(P5_R1_out(15 downto 12)= "0000" or P5_R1_out(15 downto 12)= "0011" or
@@ -330,8 +371,6 @@ elsif opcode='0010 then
 		end if;
 	 
 	end process; 
-	
-	
 	
 	
 	---------------------------------WB--------------------------------
@@ -473,4 +512,21 @@ elsif opcode='0010 then
 			;
 			 
 			 end case;
+			 
+					
+					
+			   
+					
 			
+					
+					
+			
+			         	
+ 	              
+	
+	   
+	 
+	 
+	 
+	 
+      
