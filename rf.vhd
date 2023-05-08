@@ -1,9 +1,9 @@
 library ieee;
 use ieee.std_logic_1164.all;
 entity rf is
-	port (a1 : in std_logic_vector(3 downto 0);
-			a2 : in std_logic_vector(3 downto 0);
-			a3 : in std_logic_vector(3 downto 0);
+	port (a1 : in std_logic_vector(2 downto 0);
+			a2 : in std_logic_vector(2 downto 0);
+			a3 : in std_logic_vector(2 downto 0);
 			d1 : out std_logic_vector(15 downto 0);
 			d2 : out std_logic_vector(15 downto 0);
 			d3 : in std_logic_vector(15 downto 0);
@@ -32,7 +32,7 @@ begin
 			r5<=(others => '0');
 			r6<=(others => '0');
 			r7<=(others => '0');
-		elsif (clk'event and clk='1') then
+		elsif (clk'event and clk='0') then
 			if (wr='1') then
 				case a3 is 
 					when "000"=>
@@ -51,6 +51,7 @@ begin
 						r6<=d3;
 					when "111"=>
 						r7<=d3;
+					when others=>
 				end case;
 			end if;
 		end if;
@@ -75,6 +76,7 @@ begin
 						t1<=r6;
 					when "111"=>
 						t1<=r7;
+					when others=>
 			end case;
 			case a2 is 
 					when "000"=>
@@ -93,6 +95,7 @@ begin
 						t2<=r6;
 					when "111"=>
 						t2<=r7;
+					when others=>
 			end case;
 		end if;
 	end process;
