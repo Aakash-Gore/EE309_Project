@@ -10,7 +10,7 @@ end decoder3_8;
 
 architecture bhv of decoder3_8 is
 begin
-  process (sel, y)
+  process (sel)
       begin
   
 		if sel = "000" then
