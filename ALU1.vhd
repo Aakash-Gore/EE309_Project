@@ -43,11 +43,5 @@ architecture Struct of ALU1 is
 			
 		   end process;
 			
-	end Struct;
-		
-		
-		
-			
-					  
-					
+	end Struct;				
 						
