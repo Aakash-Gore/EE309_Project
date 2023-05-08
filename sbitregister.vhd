@@ -11,11 +11,11 @@ end entity;
 
 architecture description of sbitregister is
 		begin
-			process (clk, clr)
+			process (clk, clr, ld, d)
 				begin
 					if clr = '1' then
 						q <= (others => '0');
-					elsif rising_edge(clk) then
+					elsif falling_edge(clk) then
 						if ld = '1' then
 							q <= d;
 						end if;
